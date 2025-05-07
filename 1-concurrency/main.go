@@ -25,7 +25,6 @@ func main() {
 	for sqNum := range resultCh {
 		fmt.Printf("%d ", sqNum)
 	}
-
 }
 
 func GenerateNum(numChan chan int, countNum int, wg *sync.WaitGroup) {
