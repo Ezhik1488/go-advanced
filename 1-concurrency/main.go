@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
 	"sync"
 )
@@ -17,10 +16,7 @@ func main() {
 	go GenerateNum(numsCh, countNum, wg)
 	go PowToTwo(numsCh, resultCh, wg)
 
-	go func() {
-		wg.Wait()
-		close(resultCh)
-	}()
+	wg.Wait()
 
 	for sqNum := range resultCh {
 		fmt.Printf("%d ", sqNum)
@@ -39,6 +35,7 @@ func PowToTwo(numChan chan int, resChan chan int, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for value := range numChan {
-		resChan <- int(math.Pow(float64(value), 2))
+		resChan <- value * value
 	}
+	close(resChan)
 }

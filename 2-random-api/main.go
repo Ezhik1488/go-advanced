@@ -16,19 +16,11 @@ func main() {
 
 	router.HandleFunc("/random", random)
 
-	err := server.ListenAndServe()
-	if err != nil {
-		return
-	}
-
+	server.ListenAndServe()
 }
 
 func random(w http.ResponseWriter, req *http.Request) {
-	randomNum := rand.Intn(6)
+	randomNum := rand.Intn(6) + 1
 	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte(fmt.Sprintf("%d", randomNum)))
-	if err != nil {
-		return
-	}
-	return
+	w.Write([]byte(fmt.Sprintf("%d", randomNum)))
 }
