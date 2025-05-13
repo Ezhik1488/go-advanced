@@ -31,6 +31,7 @@ func (h *VerifyHandler) SendVerifyEmail() http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
+			fmt.Println(err.Error())
 			return
 		}
 
@@ -39,6 +40,7 @@ func (h *VerifyHandler) SendVerifyEmail() http.HandlerFunc {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(err.Error()))
+			fmt.Println(err.Error())
 			return
 		}
 
@@ -48,13 +50,13 @@ func (h *VerifyHandler) SendVerifyEmail() http.HandlerFunc {
 		// Сохранить в JSON hash email: hash
 		err = h.ls.Write(map[string]string{hashMail: body.Email})
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err.Error())
 			return
 		}
 		// Отправить Email
 		err = h.ec.SendEmailWithTLS(body.Email, url)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err.Error())
 			return
 		}
 		// Отдать ответ клиенту
@@ -68,28 +70,26 @@ func (h *VerifyHandler) VerifyEmail() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		data, err := h.ls.Read()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		var mapData map[string]string
-		err = json.Unmarshal(data, &mapData)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
 		isValid := false
+		fmt.Println(h.ls.Data)
 
-		if _, ok := mapData[(strings.Split(r.URL.Path, "/"))[2]]; ok {
+		if _, ok := h.ls.Data[(strings.Split(r.URL.Path, "/"))[2]]; ok {
 			isValid = true
+			delete(h.ls.Data, (strings.Split(r.URL.Path, "/"))[2])
+			fmt.Println(h.ls.Data)
+			err := h.ls.Save()
+			if err != nil {
+				fmt.Println(err.Error())
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte(err.Error()))
+				return
+			}
 		}
 
 		res := VerifyResponse{IsValid: isValid}
-		err = json.NewEncoder(w).Encode(res)
+		err := json.NewEncoder(w).Encode(res)
 		if err != nil {
+			fmt.Println(err.Error())
 			return
 		}
 	}

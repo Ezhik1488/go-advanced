@@ -11,11 +11,10 @@ type Config struct {
 }
 
 type EmailConfig struct {
-	Login     string
-	Password  string
-	Address   string
-	Port      string
-	Recipient string
+	Login    string
+	Password string
+	Address  string
+	Port     string
 }
 
 func LoadConfig() *Config {
@@ -26,11 +25,10 @@ func LoadConfig() *Config {
 	}
 	return &Config{
 		Email: EmailConfig{
-			Login:     os.Getenv("EMAIL_LOGIN"),
-			Password:  os.Getenv("EMAIL_PASSWORD"),
-			Address:   os.Getenv("EMAIL_ADDRESS"),
-			Port:      os.Getenv("EMAIL_PORT"),
-			Recipient: os.Getenv("EMAIL_RECIPIENT"),
+			Login:    os.Getenv("EMAIL_LOGIN"),
+			Password: os.Getenv("EMAIL_PASSWORD"),
+			Address:  os.Getenv("EMAIL_ADDRESS"),
+			Port:     os.Getenv("EMAIL_PORT"),
 		},
 	}
 }
