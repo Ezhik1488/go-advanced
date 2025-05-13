@@ -41,7 +41,7 @@ func (s *LocalStorage) Write(rawData map[string]string) error {
 		return err
 	}
 
-	file, err := os.OpenFile(s.filename, os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.OpenFile(s.filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		return err
 	}
