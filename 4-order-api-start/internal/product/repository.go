@@ -23,12 +23,12 @@ func (repo *ProductRepository) FindALL() ([]Product, error) {
 }
 
 func (repo *ProductRepository) FindByID(id uint) (*Product, error) {
-	var product *Product
+	var product Product
 	result := repo.DB.DB.First(&product, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return product, nil
+	return &product, nil
 }
 
 func (repo *ProductRepository) Create(product *Product) error {
