@@ -10,7 +10,7 @@ type ProductRepository struct {
 }
 
 func NewProductRepository(db *dbl.DB) *ProductRepository {
-	return &ProductRepository{db}
+	return &ProductRepository{DB: db}
 }
 
 func (repo *ProductRepository) FindALL() ([]Product, error) {
