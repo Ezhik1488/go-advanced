@@ -7,7 +7,8 @@ import (
 )
 
 type Config struct {
-	DB DbConfig
+	DB   DbConfig
+	Auth AuthConfig
 }
 
 type DbConfig struct {
@@ -17,6 +18,10 @@ type DbConfig struct {
 	DBName   string
 	Port     string
 	SSLMode  string
+}
+
+type AuthConfig struct {
+	Secret string
 }
 
 func LoadConfig() *Config {
@@ -32,6 +37,9 @@ func LoadConfig() *Config {
 			DBName:   os.Getenv("DB_NAME"),
 			Port:     os.Getenv("DB_PORT"),
 			SSLMode:  os.Getenv("DB_SSLMODE"),
+		},
+		Auth: AuthConfig{
+			Secret: os.Getenv("AUTH_SECRET"),
 		},
 	}
 }
