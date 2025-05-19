@@ -5,7 +5,10 @@ import (
 	"net/http"
 	"order-api/config"
 	"order-api/dbl"
+	"order-api/internal/auth"
 	"order-api/internal/product"
+	"order-api/internal/user"
+	"order-api/pkg/jwt"
 	"order-api/pkg/middleware"
 	"os"
 )
@@ -20,14 +23,22 @@ func main() {
 	cfg := config.LoadConfig()
 	db := dbl.NewDB(cfg)
 	router := http.NewServeMux()
+	jwtCust := jwt.NewJWT(cfg)
 
 	// Repositories
 	productRepo := product.NewProductRepository(db)
+	userRepo := user.NewUserRepository(db)
+
+	// Services
+	authService := auth.NewAuthService(userRepo, jwtCust, cfg)
 
 	// Handlers
 	product.NewProductHandler(router, &product.ProductHandlerDeps{
 		ProductRepo: productRepo,
+		Config:      cfg,
 	})
+
+	auth.NewAuthHandler(router, authService)
 
 	// Middleware
 	stack := middleware.Chain(
