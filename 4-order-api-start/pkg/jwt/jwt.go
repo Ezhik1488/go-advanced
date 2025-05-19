@@ -37,7 +37,7 @@ func (j *JWT) VerifyToken(tokenString string) (bool, *JWTData) {
 	if err != nil {
 		return false, nil
 	}
-	
+
 	claims, ok := parse.Claims.(jwt2.MapClaims)
 	if !ok {
 		return false, nil
