@@ -4,6 +4,7 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"os"
+	"strconv"
 )
 
 type Config struct {
@@ -21,13 +22,18 @@ type DbConfig struct {
 }
 
 type AuthConfig struct {
-	Secret string
+	Secret     string
+	VerifyCode int
 }
 
 func LoadConfig() *Config {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
+	}
+	verifyCode, err := strconv.Atoi(os.Getenv("AUTH_VERIFY_CODE"))
+	if err != nil {
+		log.Fatal("Error loading AUTH_VERIFY_CODE")
 	}
 	return &Config{
 		DB: DbConfig{
@@ -39,7 +45,8 @@ func LoadConfig() *Config {
 			SSLMode:  os.Getenv("DB_SSLMODE"),
 		},
 		Auth: AuthConfig{
-			Secret: os.Getenv("AUTH_SECRET"),
+			Secret:     os.Getenv("AUTH_SECRET"),
+			VerifyCode: verifyCode,
 		},
 	}
 }

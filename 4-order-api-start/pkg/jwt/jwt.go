@@ -1,4 +1,4 @@
-package pkg
+package jwt
 
 import (
 	jwt2 "github.com/golang-jwt/jwt/v5"
@@ -13,7 +13,7 @@ func NewJWT(cfg *config.Config) *JWT {
 	return &JWT{secret: cfg.Auth.Secret}
 }
 
-func (j *JWT) GenerateToken(userID int, userPhone string) (string, error) {
+func (j *JWT) GenerateToken(userID uint, userPhone string) (string, error) {
 	token := jwt2.NewWithClaims(jwt2.SigningMethodHS256, jwt2.MapClaims{
 		"user_id":    userID,
 		"user_phone": userPhone,
