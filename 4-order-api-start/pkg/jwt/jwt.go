@@ -37,6 +37,19 @@ func (j *JWT) VerifyToken(tokenString string) (bool, *JWTData) {
 	if err != nil {
 		return false, nil
 	}
-	userPhone := parse.Claims.(jwt2.MapClaims)["user_phone"].(string)
+	
+	claims, ok := parse.Claims.(jwt2.MapClaims)
+	if !ok {
+		return false, nil
+	}
+	rawUserPhone, existed := claims["user_phone"]
+	if !existed {
+		return false, nil
+	}
+	userPhone, ok := rawUserPhone.(string)
+	if !ok {
+		return false, nil
+	}
+
 	return parse.Valid, &JWTData{UserPhone: userPhone}
 }
