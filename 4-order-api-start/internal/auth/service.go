@@ -45,7 +45,7 @@ func (s *AuthService) VerifyCode(sessionID string, code int) (string, error) {
 	if code != s.Config.Auth.VerifyCode {
 		return "", errors.New("invalid verification code")
 	}
-	token, err := s.JWT.GenerateToken(foundedUser.ID, foundedUser.PhoneNumber)
+	token, err := s.JWT.GenerateToken(foundedUser.ID, foundedUser.PhoneNumber, sessionID)
 	if err != nil {
 		return "", err
 	}

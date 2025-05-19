@@ -13,10 +13,11 @@ func NewJWT(cfg *config.Config) *JWT {
 	return &JWT{secret: cfg.Auth.Secret}
 }
 
-func (j *JWT) GenerateToken(userID uint, userPhone string) (string, error) {
+func (j *JWT) GenerateToken(userID uint, userPhone, sessionID string) (string, error) {
 	token := jwt2.NewWithClaims(jwt2.SigningMethodHS256, jwt2.MapClaims{
 		"user_id":    userID,
 		"user_phone": userPhone,
+		"session_id": sessionID,
 	})
 	signToken, err := token.SignedString([]byte(j.secret))
 	if err != nil {
