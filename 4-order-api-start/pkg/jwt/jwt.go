@@ -5,6 +5,10 @@ import (
 	"order-api/config"
 )
 
+type JWTData struct {
+	UserPhone string
+}
+
 type JWT struct {
 	secret string
 }
@@ -24,4 +28,15 @@ func (j *JWT) GenerateToken(userID uint, userPhone, sessionID string) (string, e
 		return "", err
 	}
 	return signToken, nil
+}
+
+func (j *JWT) VerifyToken(tokenString string) (bool, *JWTData) {
+	parse, err := jwt2.Parse(tokenString, func(token *jwt2.Token) (interface{}, error) {
+		return []byte(j.secret), nil
+	})
+	if err != nil {
+		return false, nil
+	}
+	userPhone := parse.Claims.(jwt2.MapClaims)["user_phone"].(string)
+	return parse.Valid, &JWTData{UserPhone: userPhone}
 }

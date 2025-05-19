@@ -3,6 +3,7 @@ package product
 import (
 	"gorm.io/gorm"
 	"net/http"
+	"order-api/config"
 	"order-api/pkg/middleware"
 	"order-api/pkg/req"
 	"order-api/pkg/res"
@@ -17,17 +18,18 @@ type ProductHandler struct {
 
 type ProductHandlerDeps struct {
 	ProductRepo *ProductRepository
+	Config      *config.Config
 }
 
 func NewProductHandler(router *http.ServeMux, deps *ProductHandlerDeps) *ProductHandler {
 	handler := &ProductHandler{
 		ProductRepo: deps.ProductRepo,
 	}
-	router.Handle("GET /product", middleware.Auth(handler.GetALL()))
+	router.Handle("GET /product", middleware.Auth(handler.GetALL(), deps.Config))
 	router.HandleFunc("GET /product/{id}", handler.GetByID())
-	router.Handle("POST /product", middleware.Auth(handler.Create()))
-	router.Handle("PATCH /product/{id}", middleware.Auth(handler.Update()))
-	router.Handle("DELETE /product/{id}", middleware.Auth(handler.Delete()))
+	router.Handle("POST /product", middleware.Auth(handler.Create(), deps.Config))
+	router.Handle("PATCH /product/{id}", middleware.Auth(handler.Update(), deps.Config))
+	router.Handle("DELETE /product/{id}", middleware.Auth(handler.Delete(), deps.Config))
 	return handler
 }
 

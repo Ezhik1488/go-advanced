@@ -35,6 +35,7 @@ func main() {
 	// Handlers
 	product.NewProductHandler(router, &product.ProductHandlerDeps{
 		ProductRepo: productRepo,
+		Config:      cfg,
 	})
 
 	auth.NewAuthHandler(router, authService)
