@@ -3,12 +3,14 @@ package user
 import (
 	"gorm.io/gorm"
 	"math/rand"
+	"order-api/internal/order"
 )
 
 type User struct {
 	gorm.Model
 	PhoneNumber string
 	SessionID   string
+	Orders      []order.Order
 }
 
 func (u *User) GenerateSessionID() {
