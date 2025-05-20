@@ -6,6 +6,7 @@ import (
 	"order-api/config"
 	"order-api/dbl"
 	"order-api/internal/auth"
+	"order-api/internal/order"
 	"order-api/internal/product"
 	"order-api/internal/user"
 	"order-api/pkg/jwt"
@@ -28,9 +29,11 @@ func main() {
 	// Repositories
 	productRepo := product.NewProductRepository(db)
 	userRepo := user.NewUserRepository(db)
+	orderRepo := order.NewOrderRepository(db)
 
 	// Services
 	authService := auth.NewAuthService(userRepo, jwtCust, cfg)
+	orderService := order.NewOrderService(orderRepo, userRepo)
 
 	// Handlers
 	product.NewProductHandler(router, &product.ProductHandlerDeps{
@@ -39,6 +42,7 @@ func main() {
 	})
 
 	auth.NewAuthHandler(router, authService)
+	order.NewOrderHandler(router, orderService, cfg)
 
 	// Middleware
 	stack := middleware.Chain(

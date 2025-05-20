@@ -7,6 +7,7 @@ import (
 
 type JWTData struct {
 	UserPhone string
+	UserID    string
 }
 
 type JWT struct {
