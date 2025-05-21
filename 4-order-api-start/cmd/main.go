@@ -43,7 +43,7 @@ func main() {
 		Config:         cfg,
 	})
 
-	auth.NewAuthHandler(router, authService)
+	auth.NewAuthHandler(router, authService, cfg)
 	order.NewOrderHandler(router, orderService, cfg)
 
 	// Middleware

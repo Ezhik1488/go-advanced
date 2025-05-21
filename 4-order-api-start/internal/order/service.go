@@ -8,6 +8,8 @@ import (
 
 type OrderServiceInt interface {
 	CreateOrder(userID uint, body *CreateOrderRequest) (*models.Order, error)
+	FindByID(orderID, userID uint) (*models.Order, error)
+	FindByUserID(userID uint) ([]models.Order, error)
 }
 
 type OrderService struct {
@@ -45,4 +47,21 @@ func (s *OrderService) CreateOrder(userID uint, body *CreateOrderRequest) (*mode
 	order.ProductsCount = productCount
 
 	return order, s.OrderRepo.Create(order)
+}
+
+func (s *OrderService) FindByID(orderID, userID uint) (*models.Order, error) {
+	result, err := s.OrderRepo.GetByID(orderID)
+	if err != nil {
+		return nil, err
+	}
+
+	if result.UserID != userID {
+		return nil, ErrForbidden
+	}
+	return result, nil
+
+}
+
+func (s *OrderService) FindByUserID(userID uint) ([]models.Order, error) {
+	return s.OrderRepo.GetByUserID(userID)
 }

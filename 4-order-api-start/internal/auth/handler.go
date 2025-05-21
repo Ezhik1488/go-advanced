@@ -4,6 +4,8 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"net/http"
+	"order-api/config"
+	"order-api/pkg/middleware"
 	"order-api/pkg/req"
 	"order-api/pkg/res"
 )
@@ -14,10 +16,11 @@ type AuthHandler struct {
 	AuthService *AuthService
 }
 
-func NewAuthHandler(router *http.ServeMux, authService *AuthService) *AuthHandler {
+func NewAuthHandler(router *http.ServeMux, authService *AuthService, cfg *config.Config) *AuthHandler {
 	handler := &AuthHandler{AuthService: authService}
 	router.HandleFunc("POST /auth/login", handler.Login())
 	router.HandleFunc("POST /auth/verify", handler.VerifyCode())
+	router.Handle("GET /auth/me", middleware.Auth(handler.GetMyID(), cfg))
 	return handler
 }
 
@@ -68,5 +71,22 @@ func (h *AuthHandler) VerifyCode() http.HandlerFunc {
 			Token: token,
 		}
 		res.JSON(w, data, http.StatusOK)
+	}
+}
+
+func (h *AuthHandler) GetMyID() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userID, ok := r.Context().Value(middleware.ContextUserID).(uint)
+		if !ok {
+			res.JSON(w, Response{
+				"result": "Something went wrong",
+				"status": http.StatusInternalServerError,
+			}, http.StatusInternalServerError)
+			return
+		}
+		res.JSON(w, Response{
+			"result": userID,
+			"status": http.StatusOK,
+		}, http.StatusOK)
 	}
 }

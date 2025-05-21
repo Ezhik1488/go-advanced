@@ -7,7 +7,7 @@ import (
 
 type OrderRepositoryInt interface {
 	GetByID(id uint) (*models.Order, error)
-	GetByUserPhone(userID uint) ([]models.Order, error)
+	GetByUserID(userID uint) ([]models.Order, error)
 	Create(order *models.Order) error
 }
 
@@ -21,13 +21,13 @@ func NewOrderRepository(db *dbl.DB) *OrderRepository {
 
 func (repo *OrderRepository) GetByID(id uint) (*models.Order, error) {
 	var order models.Order
-	result := repo.DB.DB.First(&order, id)
+	result := repo.DB.DB.Preload("Products").First(&order, id)
 	return &order, result.Error
 }
 
-func (repo *OrderRepository) GetByUserPhone(userID uint) ([]models.Order, error) {
+func (repo *OrderRepository) GetByUserID(userID uint) ([]models.Order, error) {
 	var orders []models.Order
-	result := repo.DB.DB.Where("user_id = ?", userID).Find(&orders)
+	result := repo.DB.DB.Where("user_id = ?", userID).Preload("Products").Find(&orders)
 	return orders, result.Error
 }
 
