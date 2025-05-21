@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"order-api/config"
+	"order-api/internal/core/models"
 	"order-api/pkg/middleware"
 	"order-api/pkg/req"
 	"order-api/pkg/res"
@@ -13,17 +14,20 @@ import (
 type Response map[string]interface{}
 
 type ProductHandler struct {
-	ProductRepo *ProductRepository
+	ProductRepo    *ProductRepository
+	ProductService ProductServiceInt
 }
 
 type ProductHandlerDeps struct {
-	ProductRepo *ProductRepository
-	Config      *config.Config
+	ProductRepo    *ProductRepository
+	ProductService ProductServiceInt
+	Config         *config.Config
 }
 
 func NewProductHandler(router *http.ServeMux, deps *ProductHandlerDeps) *ProductHandler {
 	handler := &ProductHandler{
-		ProductRepo: deps.ProductRepo,
+		ProductRepo:    deps.ProductRepo,
+		ProductService: deps.ProductService,
 	}
 	router.Handle("GET /product", middleware.Auth(handler.GetALL(), deps.Config))
 	router.HandleFunc("GET /product/{id}", handler.GetByID())
@@ -82,7 +86,7 @@ func (h *ProductHandler) Create() http.HandlerFunc {
 		if err != nil {
 			return
 		}
-		product := NewProduct(body)
+		product := h.ProductService.NewProduct(body)
 		err = h.ProductRepo.Create(product)
 		if err != nil {
 			res.JSON(w, Response{
@@ -113,7 +117,7 @@ func (h *ProductHandler) Update() http.HandlerFunc {
 		if err != nil {
 			return
 		}
-		result, err := h.ProductRepo.Update(&Product{
+		result, err := h.ProductRepo.Update(&models.Product{
 			Model:       gorm.Model{ID: uint(id)},
 			Name:        body.Name,
 			Price:       body.Price,

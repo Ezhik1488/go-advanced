@@ -1,6 +1,17 @@
 package user
 
-import "order-api/dbl"
+import (
+	"order-api/dbl"
+	"order-api/internal/core/models"
+)
+
+type UserRepositoryInt interface {
+	FindByPhone(phone string) (*models.User, error)
+	FindBySessionID(sessionID string) (*models.User, error)
+	Create(user *models.User) error
+	UpdateSessionID(user *models.User) error
+	Delete(id uint) (int, error)
+}
 
 type UserRepository struct {
 	DB *dbl.DB
@@ -12,8 +23,8 @@ func NewUserRepository(db *dbl.DB) *UserRepository {
 	}
 }
 
-func (repo *UserRepository) FindByPhone(phone string) (*User, error) {
-	var user User
+func (repo *UserRepository) FindByPhone(phone string) (*models.User, error) {
+	var user models.User
 	result := repo.DB.DB.First(&user, "phone_number = ?", phone)
 	if result.Error != nil {
 		return nil, result.Error
@@ -21,8 +32,8 @@ func (repo *UserRepository) FindByPhone(phone string) (*User, error) {
 	return &user, nil
 }
 
-func (repo *UserRepository) FindBySessionID(sessionID string) (*User, error) {
-	var user User
+func (repo *UserRepository) FindBySessionID(sessionID string) (*models.User, error) {
+	var user models.User
 	result := repo.DB.DB.First(&user, "session_id = ?", sessionID)
 	if result.Error != nil {
 		return nil, result.Error
@@ -30,7 +41,7 @@ func (repo *UserRepository) FindBySessionID(sessionID string) (*User, error) {
 	return &user, nil
 }
 
-func (repo *UserRepository) Create(user *User) error {
+func (repo *UserRepository) Create(user *models.User) error {
 	result := repo.DB.DB.Create(user)
 	if result.Error != nil {
 		return result.Error
@@ -38,7 +49,7 @@ func (repo *UserRepository) Create(user *User) error {
 	return nil
 }
 
-func (repo *UserRepository) UpdateSessionID(user *User) error {
+func (repo *UserRepository) UpdateSessionID(user *models.User) error {
 	user.GenerateSessionID()
 	result := repo.DB.DB.Model(user).Update("session_id", user.SessionID)
 	if result.Error != nil {

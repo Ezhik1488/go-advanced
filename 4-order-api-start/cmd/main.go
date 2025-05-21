@@ -33,12 +33,14 @@ func main() {
 
 	// Services
 	authService := auth.NewAuthService(userRepo, jwtCust, cfg)
-	orderService := order.NewOrderService(orderRepo, userRepo)
+	orderService := order.NewOrderService(orderRepo, userRepo, productRepo)
+	productService := product.NewProductService()
 
 	// Handlers
 	product.NewProductHandler(router, &product.ProductHandlerDeps{
-		ProductRepo: productRepo,
-		Config:      cfg,
+		ProductRepo:    productRepo,
+		ProductService: productService,
+		Config:         cfg,
 	})
 
 	auth.NewAuthHandler(router, authService)
@@ -61,5 +63,4 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 }

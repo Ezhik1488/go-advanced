@@ -1,13 +1,14 @@
 package jwt
 
 import (
+	"fmt"
 	jwt2 "github.com/golang-jwt/jwt/v5"
 	"order-api/config"
 )
 
 type JWTData struct {
 	UserPhone string
-	UserID    string
+	UserID    uint
 }
 
 type JWT struct {
@@ -35,6 +36,7 @@ func (j *JWT) VerifyToken(tokenString string) (bool, *JWTData) {
 	parse, err := jwt2.Parse(tokenString, func(token *jwt2.Token) (interface{}, error) {
 		return []byte(j.secret), nil
 	})
+
 	if err != nil {
 		return false, nil
 	}
@@ -43,14 +45,26 @@ func (j *JWT) VerifyToken(tokenString string) (bool, *JWTData) {
 	if !ok {
 		return false, nil
 	}
+
 	rawUserPhone, existed := claims["user_phone"]
 	if !existed {
 		return false, nil
 	}
+
 	userPhone, ok := rawUserPhone.(string)
 	if !ok {
 		return false, nil
 	}
 
-	return parse.Valid, &JWTData{UserPhone: userPhone}
+	rawUserId, existed := claims["user_id"]
+	if !existed {
+		return false, nil
+	}
+
+	userID, ok := rawUserId.(float64)
+	if !ok {
+		fmt.Println(ok)
+		return false, nil
+	}
+	return parse.Valid, &JWTData{UserPhone: userPhone, UserID: uint(userID)}
 }

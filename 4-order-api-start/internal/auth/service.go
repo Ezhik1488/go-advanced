@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"order-api/config"
+	"order-api/internal/core/models"
 	"order-api/internal/user"
 	"order-api/pkg/jwt"
 )
@@ -20,7 +21,7 @@ func NewAuthService(userRepo *user.UserRepository, jwt *jwt.JWT, cfg *config.Con
 func (s *AuthService) Login(number string) (string, error) {
 	existedUser, _ := s.UserRepo.FindByPhone(number)
 	if existedUser == nil {
-		newUser := &user.User{
+		newUser := &models.User{
 			PhoneNumber: number,
 		}
 		newUser.GenerateSessionID()
