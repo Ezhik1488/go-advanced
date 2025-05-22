@@ -12,6 +12,7 @@ type key string
 
 const (
 	ContextUserPhone key = "userPhone"
+	ContextUserID    key = "userID"
 )
 
 func Auth(next http.Handler, cfg *config.Config) http.Handler {
@@ -36,7 +37,8 @@ func Auth(next http.Handler, cfg *config.Config) http.Handler {
 			return
 		}
 		ctx := context.WithValue(r.Context(), ContextUserPhone, data.UserPhone)
-		req := r.WithContext(ctx)
+		ctx2 := context.WithValue(ctx, ContextUserID, data.UserID)
+		req := r.WithContext(ctx2)
 
 		next.ServeHTTP(w, req)
 	})

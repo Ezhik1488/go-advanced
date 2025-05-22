@@ -1,4 +1,4 @@
-package user
+package models
 
 import (
 	"gorm.io/gorm"
@@ -9,6 +9,7 @@ type User struct {
 	gorm.Model
 	PhoneNumber string
 	SessionID   string
+	Orders      []Order
 }
 
 func (u *User) GenerateSessionID() {

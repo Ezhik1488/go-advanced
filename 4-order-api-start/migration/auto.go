@@ -3,14 +3,13 @@ package main
 import (
 	"order-api/config"
 	"order-api/dbl"
-	"order-api/internal/product"
-	"order-api/internal/user"
+	"order-api/internal/core/models"
 )
 
 func main() {
 	cfg := config.LoadConfig()
 	db := dbl.NewDB(cfg)
-	err := db.AutoMigrate(&product.Product{}, &user.User{})
+	err := db.AutoMigrate(&models.Product{}, &models.User{}, &models.Order{})
 	if err != nil {
 		panic(err)
 	}

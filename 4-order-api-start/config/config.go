@@ -35,6 +35,12 @@ func LoadConfig() *Config {
 	if err != nil {
 		log.Fatal("Error loading AUTH_VERIFY_CODE")
 	}
+
+	authSecret := os.Getenv("AUTH_SECRET")
+	if authSecret == "" {
+		log.Fatal("AUTH_SECRET is empty")
+	}
+
 	return &Config{
 		DB: DbConfig{
 			Host:     os.Getenv("DB_HOST"),
@@ -45,7 +51,7 @@ func LoadConfig() *Config {
 			SSLMode:  os.Getenv("DB_SSLMODE"),
 		},
 		Auth: AuthConfig{
-			Secret:     os.Getenv("AUTH_SECRET"),
+			Secret:     authSecret,
 			VerifyCode: verifyCode,
 		},
 	}

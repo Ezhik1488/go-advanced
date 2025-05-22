@@ -3,3 +3,6 @@
 3-validation-api/data.json
 3-validation-api/task.txt
 4-order-api-start/.env
+4-order-api-start/internal/order/Todo
+4-order-api-start/tests/e2e/.env
+4-order-api-start/tests/e2e/.env
