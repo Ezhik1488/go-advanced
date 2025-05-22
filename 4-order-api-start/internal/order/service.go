@@ -29,7 +29,7 @@ func NewOrderService(orderRepo *OrderRepository, userRepo user.UserRepositoryInt
 func (s *OrderService) CreateOrder(userID uint, body *CreateOrderRequest) (*models.Order, error) {
 	var totalCost float64
 	var productCount int
-	order := &models.Order{
+	order := models.Order{
 		UserID: userID,
 	}
 	// Найти и добавить товар в заказ по артикулу
@@ -46,7 +46,7 @@ func (s *OrderService) CreateOrder(userID uint, body *CreateOrderRequest) (*mode
 	order.TotalCost = totalCost
 	order.ProductsCount = productCount
 
-	return order, s.OrderRepo.Create(order)
+	return &order, s.OrderRepo.Create(order)
 }
 
 func (s *OrderService) FindByID(orderID, userID uint) (*models.Order, error) {

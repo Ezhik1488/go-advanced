@@ -8,7 +8,7 @@ import (
 type OrderRepositoryInt interface {
 	GetByID(id uint) (*models.Order, error)
 	GetByUserID(userID uint) ([]models.Order, error)
-	Create(order *models.Order) error
+	Create(order models.Order) error
 }
 
 type OrderRepository struct {
@@ -31,7 +31,7 @@ func (repo *OrderRepository) GetByUserID(userID uint) ([]models.Order, error) {
 	return orders, result.Error
 }
 
-func (repo *OrderRepository) Create(order *models.Order) error {
+func (repo *OrderRepository) Create(order models.Order) error {
 	result := repo.DB.DB.Create(&order)
 	return result.Error
 }
