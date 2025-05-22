@@ -65,13 +65,15 @@ func removeData(db *gorm.DB, orderID uint) {
 	db.Unscoped().Where("id = ?", orderID).Delete(&models.Order{})
 }
 
-func TestOrder_Create_Success(t *testing.T) {
+func setup() (*httptest.Server, *gorm.DB) {
 	db := initDB()
 	initData(db)
-
 	ts := httptest.NewServer(App())
-	defer ts.Close()
 
+	return ts, db
+}
+
+func getUserToken(t *testing.T, ts *httptest.Server) string {
 	// Получение JWT
 	// 	 получение sessionID
 	loginData, _ := json.Marshal(auth.LoginRequest{Number: "+79112223344"})
@@ -111,20 +113,35 @@ func TestOrder_Create_Success(t *testing.T) {
 	if verifyResData.Token == "" {
 		t.Fatal("Token is empty")
 	}
+	return verifyResData.Token
+}
 
-	// Подготавливаем body для запроса
-	data, _ := json.Marshal(&order.CreateOrderRequest{Products: []int{10000000001}})
-
-	// Делаем запрос по пути /order
+func makeRequest(t *testing.T, ts *httptest.Server, data []byte) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodPost, ts.URL+"/order", bytes.NewBuffer(data))
 	if err != nil {
 		t.Fatal(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+verifyResData.Token)
+	req.Header.Set("Authorization", "Bearer "+getUserToken(t, ts))
 
 	client := &http.Client{}
 	res, err := client.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return res, err
+}
+
+func TestOrder_Create_Success(t *testing.T) {
+	ts, db := setup()
+	defer removeData(db, 1)
+	defer ts.Close()
+
+	// Подготавливаем body для запроса
+	data, _ := json.Marshal(&order.CreateOrderRequest{Products: []int{10000000001}})
+
+	// Делаем запрос
+	res, err := makeRequest(t, ts, data)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -144,7 +161,42 @@ func TestOrder_Create_Success(t *testing.T) {
 	if orderResData.TotalCost != 123.45 {
 		t.Errorf("got %f, want %f", orderResData.TotalCost, 123.45)
 	}
+}
 
-	// Удаляем данные из БД
-	removeData(db, 1)
+func TestOrder_Create_Fail(t *testing.T) {
+	ts, db := setup()
+	defer removeData(db, 1)
+	defer ts.Close()
+
+	// Подготавливаем body для запроса
+	data, _ := json.Marshal(&order.CreateOrderRequest{Products: []int{}})
+
+	// Делаем запрос
+	res, err := makeRequest(t, ts, data)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if res.StatusCode != http.StatusBadRequest {
+		t.Errorf("got %d, want %d", res.StatusCode, http.StatusCreated)
+	}
+}
+
+func TestOrder_Create_UnknownArticle(t *testing.T) {
+	ts, db := setup()
+	defer removeData(db, 1)
+	defer ts.Close()
+
+	// Подготавливаем body для запроса
+	data, _ := json.Marshal(&order.CreateOrderRequest{Products: []int{10000000099}})
+
+	// Делаем запрос
+	res, err := makeRequest(t, ts, data)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if res.StatusCode != http.StatusBadRequest {
+		t.Errorf("got %d, want %d", res.StatusCode, http.StatusCreated)
+	}
 }
