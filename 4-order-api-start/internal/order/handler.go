@@ -47,6 +47,13 @@ func (h *OrderHandler) CreateOrder() http.HandlerFunc {
 		}
 
 		createdOrder, err := h.OrderService.CreateOrder(userID, body)
+		if createdOrder == nil {
+			res.JSON(w, Response{
+				"result": "Check article. Cart is empty",
+				"status": http.StatusBadRequest,
+			}, http.StatusBadRequest)
+			return
+		}
 		if err != nil {
 			res.JSON(w, Response{
 				"result": "Error when creating an order",

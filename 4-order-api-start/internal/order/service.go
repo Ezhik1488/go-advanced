@@ -1,6 +1,7 @@
 package order
 
 import (
+	"errors"
 	"order-api/internal/core/models"
 	"order-api/internal/product"
 	"order-api/internal/user"
@@ -42,6 +43,9 @@ func (s *OrderService) CreateOrder(userID uint, body *CreateOrderRequest) (*mode
 
 		totalCost += goods.Price
 		productCount++
+	}
+	if len(order.Products) == 0 {
+		return nil, errors.New("empty cart")
 	}
 	order.TotalCost = totalCost
 	order.ProductsCount = productCount
