@@ -13,7 +13,7 @@ type CreateOrderResponse struct {
 }
 
 type GetOrderByIDResponse struct {
-	Order  models.Order `json:"products"`
+	Order  models.Order `json:"order"`
 	Status int          `json:"status"`
 }
 
