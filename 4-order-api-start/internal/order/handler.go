@@ -55,13 +55,10 @@ func (h *OrderHandler) CreateOrder() http.HandlerFunc {
 				http.StatusInternalServerError)
 			return
 		}
-		res.JSON(w, Response{
-			"result": Response{
-				"detail":         "The order was successfully created",
-				"total_cost":     createdOrder.TotalCost,
-				"products_count": createdOrder.ProductsCount,
-			},
-			"status": http.StatusCreated,
+		res.JSON(w, CreateOrderResponse{
+			Detail:        "The order was successfully created",
+			TotalCost:     createdOrder.TotalCost,
+			ProductsCount: createdOrder.ProductsCount,
 		},
 			http.StatusCreated)
 	}

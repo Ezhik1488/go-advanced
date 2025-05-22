@@ -1,4 +1,4 @@
-package main
+package e2e
 
 import (
 	log "github.com/sirupsen/logrus"
@@ -53,18 +53,4 @@ func App() http.Handler {
 	)
 
 	return stack(router)
-}
-
-func main() {
-	// Configuration server
-	server := http.Server{
-		Addr:    ":8081",
-		Handler: App(),
-	}
-
-	// Start server
-	err := server.ListenAndServe()
-	if err != nil {
-		panic(err)
-	}
 }
