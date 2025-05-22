@@ -63,7 +63,6 @@ func (s *OrderService) FindByID(orderID, userID uint) (*models.Order, error) {
 		return nil, ErrForbidden
 	}
 	return result, nil
-
 }
 
 func (s *OrderService) FindByUserID(userID uint) ([]models.Order, error) {
