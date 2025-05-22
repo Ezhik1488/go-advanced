@@ -10,4 +10,5 @@ type Order struct {
 	TotalCost     float64   `json:"total_cost"`
 	UserID        uint      `json:"user_id"`
 	Products      []Product `gorm:"many2many:order_products;" json:"products"`
+	User          User      `gorm:"foreignKey:UserID"`
 }
